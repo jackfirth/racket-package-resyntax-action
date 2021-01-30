@@ -14,4 +14,4 @@ else
   raco pkg install --name "$INPUT_NAME" --batch --auto --link "$INPUT_DIRECTORY"
 fi
 
-resyntax-github-action "$INPUT_NAME"
+racket -l resyntax/github-action "$INPUT_NAME"
