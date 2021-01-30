@@ -1,0 +1,37 @@
+name: Racket Package Resyntax
+author: Jack Firth
+description: >-
+  Run Resyntax over a Racket package to generate suggested improvements.
+inputs:
+  name:
+    description: >-
+      The name that the package should be given. This is used as the `--name`
+      argument to `raco pkg install`.
+    required: true
+  directory:
+    description: >-
+      The package's root directory, relative to the root of the repository.
+      Should never include a leading slash. For example, a repository with
+      foo-lib, foo-test, and foo-doc packages would use "foo-lib", "foo-test",
+      or "foo-doc" to specify the input package directory. The default value,
+      ".", is intended to be used with single-package repositories.
+    required: false
+    default: .
+outputs:
+  conclusion:
+    description: >-
+      The conclusion of the analysis. One of `success`, `failure`, `neutral`,
+      `cancelled`, `timed_out`, or `action_required`.
+  summary:
+    description: >-
+      A human-readable string summarizing the results of the analysis.
+  annotations:
+    description: >-
+      An array of annotation objects (as a JSON string) that can be uploaded to
+      a GitHub check run.
+runs:
+  using: docker
+  image: Dockerfile
+branding:
+  icon: play
+  color: red
