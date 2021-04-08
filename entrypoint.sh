@@ -6,5 +6,12 @@ if [[ -z "$INPUT_NAME" ]]; then
 fi
 INPUT_DIRECTORY=$(realpath "$PWD/$INPUT_DIRECTORY")
 
-raco pkg install --name "$INPUT_NAME" --batch --auto --link --scope installation "$INPUT_DIRECTORY"
+raco pkg install \
+    --name "$INPUT_NAME" \
+    --batch \
+    --auto \
+    --link \
+    --scope installation \
+    --skip-installed \
+    "$INPUT_DIRECTORY"
 racket -l racket-package-resyntax-action
