@@ -1,6 +1,6 @@
 FROM racket/racket:8.0-full
-RUN apt update
-RUN apt install xvfb
+# RUN apt update
+# RUN apt install xvfb
 # `resyntax` uses DrRacket for indenting, which requires a display, so we need to install it
 # under `xvfb-run`.
 # When/if this is closed, we can use racket-langserver instead (perhaps?):
