@@ -5,7 +5,7 @@ FROM racket/racket:8.0-full
 # under `xvfb-run`.
 # When/if this is closed, we can use racket-langserver instead (perhaps?):
 # https://github.com/jeapostrophe/racket-langserver/issues/45
-RUN xvfb-run raco pkg install --batch --auto --scope installation \
+RUN raco pkg install --batch --auto --scope installation \
          "https://github.com/jackfirth/rebellion.git" \
          "https://github.com/jackfirth/resyntax.git" \
          "https://github.com/9999years/racket-package-resyntax-action.git#main"
