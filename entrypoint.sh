@@ -6,7 +6,7 @@ if [[ -z "$INPUT_NAME" ]]; then
 fi
 INPUT_DIRECTORY=$(realpath "$PWD/$INPUT_DIRECTORY")
 
-git fetch --depth=1 origin "$GITHUB_BASE_REF"
+git fetch --depth=1 --set-upstream origin "$GITHUB_BASE_REF"
 
 find .git/refs
 
