@@ -7,6 +7,7 @@
          net/url
          net/url-connect
          net/head
+         net/unihead
          json
          rebellion/collection/list
          ;  rebellion/collection/vector/builder
@@ -156,21 +157,13 @@
                        (github-repository)
                        (github-review-request-pull-number req))))
 
-(define (hash->headers table)
-  (for/fold ([headers empty-header])
-            ([(k v) (in-hash table)])
-    (insert-field k v headers)))
-
 (define (github-review-request-send req)
-  (define github-review-request-headers
-    (hash->headers (make-immutable-hash
-                    `(("Accept" . "application/vnd.github.comfort-fade-preview+json")
-                      ("Authorization" . ,(format "Bearer ~a" (github-token)))))))
   (parameterize ([current-https-protocol 'secure])
     (define response-port
       (post-pure-port (github-review-request-url req)
                       (jsexpr->bytes (github-review-request-body-jsexpr req))
-                      github-review-request-headers))
+                      `("Accept: application/vnd.github.comfort-fade-preview+json"
+                        ,(format "Authorization: Bearer ~a" (github-token)))))
     (define response (string-trim response-port))
     (close-input-port response-port)
     response))
