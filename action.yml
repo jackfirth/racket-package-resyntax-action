@@ -7,7 +7,7 @@ inputs:
     description: >-
       The name that the package should be given. This is used as the `--name`
       argument to `raco pkg install`.
-    required: true
+    required: false
   directory:
     description: >-
       The package's root directory, relative to the root of the repository.
