@@ -164,7 +164,7 @@
                       (jsexpr->bytes (github-review-request-body-jsexpr req))
                       `("Accept: application/vnd.github.comfort-fade-preview+json"
                         ,(format "Authorization: Bearer ~a" (github-token)))))
-    (define response (string-trim response-port))
+    (define response (port->string response-port))
     (close-input-port response-port)
     response))
 
