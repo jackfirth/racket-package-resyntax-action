@@ -6,6 +6,8 @@ if [[ -z "$INPUT_NAME" ]]; then
 fi
 INPUT_DIRECTORY=$(realpath "$PWD/$INPUT_DIRECTORY")
 
+git fetch --depth=1 origin "$GITHUB_BASE_REF"
+
 xvfb-run -a -e /dev/stdout raco pkg install \
     --name "$INPUT_NAME" \
     --batch \
