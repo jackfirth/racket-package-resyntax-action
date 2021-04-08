@@ -169,6 +169,14 @@
     (close-input-port response-port)
     response))
 
+; thank you jack for this code in the resyntax cli.rkt :)
+(define/guard (string-indent s #:amount amount)
+  (guard (zero? amount) then s)
+  (define indent-string (make-string amount #\space))
+  (define lines
+    (for/list ([line (in-lines (open-input-string s))])
+      (string-append indent-string line)))
+  (string-join lines "\n"))
 
 (define/guard (resyntax-github-run)
   (define filenames (git-diff-names (github-base-ref)))
@@ -186,9 +194,10 @@
       (define new-code-snippet (refactoring-result-new-code result))
       (define start-line (code-snippet-start-line old-code-snippet))
       (define end-line (code-snippet-end-line old-code-snippet))
+      (define start-col (code-snippet-start-column new-code-snippet))
       (define new-code (code-snippet-raw-text new-code-snippet))
       (define body (format "```suggestion\n~a\n```\n\nRule: `~a`\n~a"
-                           new-code
+                           (string-indent new-code #:amount start-col)
                            (refactoring-result-rule-name result)
                            (refactoring-result-message result)))
       (github-review-comment #:path (first (git-path path))
