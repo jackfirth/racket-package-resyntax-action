@@ -193,7 +193,7 @@
       (define old-code-snippet (refactoring-result-original-code result))
       (define new-code-snippet (refactoring-result-new-code result))
       (define start-line (code-snippet-start-line old-code-snippet))
-      (define end-line (code-snippet-end-line old-code-snippet))
+      (define end-line (sub1 (code-snippet-end-line old-code-snippet)))
       (define start-col (code-snippet-start-column new-code-snippet))
       (define new-code (code-snippet-raw-text new-code-snippet))
       (define body (format "```suggestion\n~a\n```\n\nRule: `~a`\n~a"
