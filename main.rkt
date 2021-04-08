@@ -74,7 +74,7 @@
   (guard (not git) then
          (error "couldn't find git executable in PATH"))
   (define-values (proc stdout stdin stderr)
-    (subprocess #f #f #f git "diff" commitish "--name-only" "-z"))
+    (subprocess #f #f #f git "diff" "--name-only" "-z" commitish))
   (close-output-port stdin)
   (subprocess-wait proc)
   (define stdout-string (port->string stdout))
@@ -83,7 +83,7 @@
   (close-input-port stderr)
   (if (zero? (string-length stderr-string))
       (string-split stdout-string "\0")
-      (error stderr-string)))
+      (error "git diff failed:" stderr-string)))
 
 (define/guard (git-path path)
   (define git (or (find-executable-path "git")
@@ -101,7 +101,7 @@
   (close-input-port stderr)
   (if (zero? (string-length stderr-string))
       (string-split stdout-string "\0")
-      (error stderr-string)))
+      (error "git ls-tree failed: " stderr-string)))
 
 (define (git-ref->pr-number ref)
   (match ref
@@ -219,6 +219,4 @@
   (println (format "~a" req)))
 
 (module+ main
-  (parameterize ([github-ref "refs/pull/385/merge"]
-                 [github-base-ref "main"])
-    (resyntax-github-run)))
+    (resyntax-github-run))
