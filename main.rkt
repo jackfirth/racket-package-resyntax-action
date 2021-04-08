@@ -121,7 +121,7 @@
                             #:body body
                             #:event event
                             #:comments comments)
-     (make-immutable-hash `((commit_id . ,commit-id)
+     (make-immutable-hash `(#;(commit_id . ,commit-id)
                             (body . ,body)
                             (event . ,event)
                             (comments . ,(map github-review-comment-jsexpr comments))))]))
