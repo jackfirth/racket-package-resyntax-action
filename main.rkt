@@ -16,6 +16,7 @@
          ;  rebellion/type/tuple
          rebellion/private/guarded-block
          resyntax
+         resyntax/refactoring-result
          resyntax/code-snippet
          resyntax/default-recommendations
          resyntax/file-group
