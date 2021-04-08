@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require fancy-app
+         racket/list
          racket/match
          racket/string
          racket/port
@@ -190,7 +191,7 @@
                            new-code
                            (refactoring-result-rule-name result)
                            (refactoring-result-message result)))
-      (github-review-comment #:path (git-path path)
+      (github-review-comment #:path (first (git-path path))
                              #:body body
                              #:start-line start-line
                              #:end-line end-line
