@@ -1,10 +1,14 @@
 name: Resyntax
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+      - ready_for_review
   workflow_dispatch:
 
 jobs:
