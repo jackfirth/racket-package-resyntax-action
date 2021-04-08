@@ -83,7 +83,7 @@
   (close-input-port stderr)
   (if (zero? (string-length stderr-string))
       (string-split stdout-string "\0")
-      (error "git diff failed:" stderr-string)))
+      (error (format "git diff failed: ~a" stderr-string))))
 
 (define/guard (git-path path)
   (define git (or (find-executable-path "git")
@@ -101,7 +101,7 @@
   (close-input-port stderr)
   (if (zero? (string-length stderr-string))
       (string-split stdout-string "\0")
-      (error "git ls-tree failed: " stderr-string)))
+      (error (format "git ls-tree failed: ~a" stderr-string))))
 
 (define (git-ref->pr-number ref)
   (match ref
