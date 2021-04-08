@@ -9,4 +9,4 @@ cd "$GITHUB_WORKSPACE"
 # raco pkg install --batch --auto https://github.com/jackfirth/resyntax.git
 
 raco pkg install --name "$INPUT_NAME" --batch --auto --link "$INPUT_DIRECTORY"
-racket -l resyntax-github-action
+racket -l racket-package-resyntax-action
