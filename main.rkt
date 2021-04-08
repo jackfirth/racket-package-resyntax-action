@@ -216,7 +216,9 @@
                                        "REQUEST_CHANGES")
                            #:comments comments))
   
-  (println (format "~a" req)))
+  (printf "Request struct: ~a\nSending request!\n" req)
+  (define resp (github-review-request-send req))
+  (printf "Response: ~a\n" resp))
 
 (module+ main
     (resyntax-github-run))
