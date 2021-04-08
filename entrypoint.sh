@@ -6,7 +6,7 @@ if [[ -z "$INPUT_NAME" ]]; then
 fi
 INPUT_DIRECTORY=$(realpath "$PWD/$INPUT_DIRECTORY")
 
-xvfb-run raco pkg install \
+xvfb-run -a -e /dev/stdout raco pkg install \
     --name "$INPUT_NAME" \
     --batch \
     --auto \
