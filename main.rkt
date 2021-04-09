@@ -1,17 +1,12 @@
 #lang racket/base
 
-(require fancy-app
-         racket/list
+(require racket/list
          racket/match
          racket/string
          racket/port
          net/url
          net/url-connect
-         net/head
-         net/unihead
          json
-         rebellion/collection/list
-         rebellion/streaming/transducer
          rebellion/type/record
          rebellion/private/guarded-block
          resyntax
@@ -19,7 +14,6 @@
          resyntax/code-snippet
          resyntax/default-recommendations
          resyntax/file-group
-         resyntax/refactoring-suite
          resyntax/source)
 
 ; https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
@@ -174,9 +168,8 @@
   (define files (file-groups-resolve (map single-file-group filenames)))
   (printf "resyntax: --- analyzing code ---\n")
   (define results
-    (transduce files
-               (append-mapping (refactor-file _ #:suite default-recommendations))
-               #:into into-list))
+    (map (λ (file) (refactor-file file #:suite default-recommendations))
+         files))
   
   (define comments
     (for/list ([result (in-list results)])
