@@ -114,10 +114,10 @@
                             #:body body
                             #:event event
                             #:comments comments)
-     (make-immutable-hash `(#;(commit_id . ,commit-id)
-                            (body . ,body)
-                            (event . ,event)
-                            (comments . ,(map github-review-comment-jsexpr comments))))]))
+     (hash 'body body
+           'event event
+           'comments (map github-review-comment-jsexpr
+                          comments))]))
 
 (define-record-type github-review-comment
   (path body start-line end-line start-side end-side))
