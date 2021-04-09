@@ -67,7 +67,7 @@
   (make-parameter (getenv "GITHUB_API_URL") #f 'github-api-url))
 
 ; This doesn't support anything but getting stdout -- but that's OK for now!
-(define/guard (run-cmd cmd-name args ...)
+(define/guard (run-cmd cmd-name . args)
   (define cmd-path (or (find-executable-path cmd-name)
                        ; Racket doesn't know about $PATHEXT:
                        (find-executable-path (string-append ".exe"))))
