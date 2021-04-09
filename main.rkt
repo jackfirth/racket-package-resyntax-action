@@ -11,11 +11,8 @@
          net/unihead
          json
          rebellion/collection/list
-         ;  rebellion/collection/vector/builder
-         ;  rebellion/streaming/reducer
          rebellion/streaming/transducer
          rebellion/type/record
-         ;  rebellion/type/tuple
          rebellion/private/guarded-block
          resyntax
          resyntax/refactoring-result
@@ -26,10 +23,6 @@
          resyntax/source)
 
 ; https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
-
-; files: from git
-; `git diff ?? --name-only -z` outputs a list of changed files nul-separated
-; refactoring suite: whatever -- cli args?
 
 ; https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
 (define github-token
@@ -69,41 +62,40 @@
 (define github-api-url
   (make-parameter (getenv "GITHUB_API_URL") #f 'github-api-url))
 
-(define/guard (git-diff-names commitish)
-  (define git (or (find-executable-path "git")
-                  ; Racket doesn't know about $PATHEXT:
-                  (find-executable-path "git.exe")))
-  (guard (not git) then
-         (error "couldn't find git executable in PATH"))
+(define/guard (run-cmd cmd-name args ...)
+  (define cmd-path (or (find-executable-path cmd-name)
+                       ; Racket doesn't know about $PATHEXT:
+                       (find-executable-path (string-append ".exe"))))
+  (guard (not cmd-path) then
+         (error (format "couldn't find ~a executable in PATH" cmd-name)))
   (define-values (proc stdout stdin stderr)
-    (subprocess #f #f #f git "diff" "--name-only" "-z" commitish))
+    (subprocess #f #f #f cmd-path . args))
   (close-output-port stdin)
   (subprocess-wait proc)
+  (define exit-code (subprocess-status proc))
   (define stdout-string (port->string stdout))
   (define stderr-string (string-trim (port->string stderr)))
   (close-input-port stdout)
   (close-input-port stderr)
-  (if (zero? (string-length stderr-string))
-      (string-split stdout-string "\0")
-      (error (format "git diff failed: ~a" stderr-string))))
+  (guard (zero? exit-code) else
+         (error (format "command '~a ~a' exited with code ~a"
+                        cmd-path
+                        (string-join args " ")
+                        exit-code)))
+  (guard (zero? (string-length stderr-string)) else
+         (error (format "command '~a ~a' wrote to stderr: ~a"
+                        cmd-path
+                        (string-join args " ")
+                        stderr-string)))
+  stdout-string)
 
-(define/guard (git-path path)
-  (define git (or (find-executable-path "git")
-                  ; Racket doesn't know about $PATHEXT:
-                  (find-executable-path "git.exe")))
-  (guard (not git) then
-         (error "couldn't find git executable in PATH"))
-  (define-values (proc stdout stdin stderr)
-    (subprocess #f #f #f git "ls-tree" "-r" "-z" "--name-only" "HEAD" path))
-  (close-output-port stdin)
-  (subprocess-wait proc)
-  (define stdout-string (port->string stdout))
-  (define stderr-string (string-trim (port->string stderr)))
-  (close-input-port stdout)
-  (close-input-port stderr)
-  (if (zero? (string-length stderr-string))
-      (string-split stdout-string "\0")
-      (error (format "git ls-tree failed: ~a" stderr-string))))
+(define (git-diff-names commitish)
+  (string-split (run-cmd "git" "diff" "--name-only" "-z" commitish)
+                "\0"))
+
+(define (git-path path)
+  (string-split (run-cmd "git" "ls-tree" "-r" "-z" "--name-only" "HEAD" path)
+                "\0"))
 
 (define (git-ref->pr-number ref)
   (match ref
@@ -146,13 +138,6 @@
 
 ; https://docs.github.com/en/rest/reference/pulls#create-a-review-for-a-pull-request
 (define (github-review-request-url req)
-  ; header: `accept`: `application/vnd.github.v3+json`
-  ;                | application/vnd.github.comfort-fade-preview+json
-  ; body:
-  ;   commit_id: (github-sha)
-  ;   body: body text...
-  ;   event: REQUEST_CHANGES
-  ;   comments: array
   (string->url (format "~a/repos/~a/pulls/~a/reviews"
                        (github-api-url)
                        (github-repository)
@@ -163,6 +148,7 @@
     (define response-port
       (post-pure-port (github-review-request-url req)
                       (jsexpr->bytes (github-review-request-body-jsexpr req))
+                      ; https://docs.github.com/en/rest/reference/pulls#list-review-comments-in-a-repository-preview-notices
                       `("Accept: application/vnd.github.comfort-fade-preview+json"
                         ,(format "Authorization: Bearer ~a" (github-token)))))
     (define response (port->string response-port))
