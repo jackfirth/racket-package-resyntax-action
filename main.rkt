@@ -24,6 +24,10 @@
 
 ; https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
 
+; TODO: I implemented the github-* parameters as parameters bc that's easy and makes sense, but
+; several of these don't really make sense as parameters -- some of these are specific to runs for pull
+; requests, for example, and this code would ideally be more generic.
+
 ; https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
 (define github-token
   (make-parameter (getenv "GITHUB_TOKEN") #f 'github-token))
@@ -62,6 +66,7 @@
 (define github-api-url
   (make-parameter (getenv "GITHUB_API_URL") #f 'github-api-url))
 
+; This doesn't support anything but getting stdout -- but that's OK for now!
 (define/guard (run-cmd cmd-name args ...)
   (define cmd-path (or (find-executable-path cmd-name)
                        ; Racket doesn't know about $PATHEXT:
@@ -164,7 +169,7 @@
       (string-append indent-string line)))
   (string-join lines "\n"))
 
-(define/guard (resyntax-github-run)
+(define (resyntax-github-run)
   (define filenames (git-diff-names (github-base-ref)))
   (define files (file-groups-resolve (map single-file-group filenames)))
   (printf "resyntax: --- analyzing code ---\n")
