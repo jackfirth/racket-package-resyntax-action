@@ -8,6 +8,7 @@
          net/url-connect
          json
          rebellion/type/record
+         rebellion/streaming/transducer
          rebellion/private/guarded-block
          resyntax
          resyntax/refactoring-result
@@ -168,8 +169,9 @@
   (define files (file-groups-resolve (map single-file-group filenames)))
   (printf "resyntax: --- analyzing code ---\n")
   (define results
-    (map (λ (file) (refactor-file file #:suite default-recommendations))
-         files))
+    (transduce files
+               (append-mapping (λ (file) (refactor-file file #:suite default-recommendations)))
+               #:into into-list))
   
   (define comments
     (for/list ([result (in-list results)])
