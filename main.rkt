@@ -130,12 +130,17 @@
                             #:end-line end-line
                             #:start-side start-side
                             #:end-side end-side)
-     (make-immutable-hash `((path . ,path)
-                            (body . ,body)
-                            (start_line . ,start-line)
-                            (line . ,end-line)
-                            (start_side . ,start-side)
-                            (side . ,end-side)))]))
+     (if (= start-line end-line)
+         (hash 'path path
+               'body body
+               'line end-line
+               'side end-side)
+         (hash 'path path
+               'body body
+               'start_line start-line
+               'line end-line
+               'start_side start-side
+               'side end-side))]))
 
 ; https://docs.github.com/en/rest/reference/pulls#create-a-review-for-a-pull-request
 (define (github-review-request-url req)
@@ -211,4 +216,4 @@
   (printf "Response: ~a\n" resp))
 
 (module+ main
-    (resyntax-github-run))
+  (resyntax-github-run))
