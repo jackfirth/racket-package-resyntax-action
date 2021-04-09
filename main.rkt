@@ -188,10 +188,10 @@
       (define end-line (sub1 (code-snippet-end-line old-code-snippet)))
       (define start-col (code-snippet-start-column new-code-snippet))
       (define new-code (code-snippet-raw-text new-code-snippet))
-      (define body (format "```suggestion\n~a\n```\n\nRule: `~a`\n~a"
+      (define body (format "```suggestion\n~a\n```\n\n~a [`~a`]"
                            (string-indent new-code #:amount start-col)
-                           (refactoring-result-rule-name result)
-                           (refactoring-result-message result)))
+                           (refactoring-result-message result)
+                           (refactoring-result-rule-name result)))
       (github-review-comment #:path (first (git-path path))
                              #:body body
                              #:start-line start-line
@@ -199,13 +199,16 @@
                              #:start-side "RIGHT"
                              #:end-side "RIGHT")))
   
+  (define resyntax-markdown-link "[Resyntax](https://docs.racket-lang.org/resyntax/)")
   (define req
     (github-review-request #:owner-repo (github-repository)
                            #:pull-number (git-ref->pr-number (github-ref))
                            #:commit-id (github-sha) 
-                           #:body (if (null? comments)
-                                      "LGTM!"
-                                      "Hello! I've found some potential refactoring ideas :)")
+                           #:body (string-append resyntax-markdown-link
+                                                 " analyzed this pull request and "
+                                                 (if (null? comments)
+                                                     "found no issues."
+                                                     "has added suggestions."))
                            #:event (if (null? comments)
                                        "APPROVE"
                                        "REQUEST_CHANGES")

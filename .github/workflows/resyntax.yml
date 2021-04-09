@@ -2,14 +2,12 @@ name: Resyntax
 
 on:
   pull_request:
-    branches: [ main ]
     types:
       - opened
       - edited
       - reopened
       - synchronize
       - ready_for_review
-  workflow_dispatch:
 
 jobs:
   build:
@@ -17,9 +15,6 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
       - uses: 9999years/racket-package-resyntax-action@main
