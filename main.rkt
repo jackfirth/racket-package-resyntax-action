@@ -8,6 +8,7 @@
          net/url-connect
          json
          rebellion/type/record
+         rebellion/collection/list
          rebellion/streaming/transducer
          rebellion/private/guarded-block
          resyntax
