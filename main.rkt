@@ -5,7 +5,7 @@
 (provide (contract-out
           [resyntax-github-run (-> #:git-base-ref string?
                                    #:github-repository (and/c string? (lambda (s) (string-contains? s "/")))
-                                   #:branch-ref (and/c string? git-pr-ref/c)
+                                   #:branch-ref (and/c string? git-pr-ref?)
                                    void)]
           [git-diff-names (-> string?
                               (listof string?))]
@@ -13,7 +13,6 @@
                         (listof string?))]
           [git-pr-ref-regexp regexp?]
           [git-pr-ref? predicate/c]
-          [git-pr-ref/c flat-contract?]
           [git-ref->pr-number (-> string?
                                   exact-nonnegative-integer?)]))
 
@@ -43,8 +42,6 @@
 (define git-pr-ref-regexp #rx"^refs/pull/([0-9]+)/merge$")
 (define (git-pr-ref? ref)
   (regexp-match git-pr-ref-regexp ref))
-(define git-pr-ref/c
-  (flat-named-contract 'git-pr-ref/c git-pr-ref?))
 
 (define (git-ref->pr-number ref)
   (match ref
@@ -53,52 +50,55 @@
     [_
      (error (format "ref ~a doesn't represent a pull request"))]))
 
+(define (resyntax-analyze-files file-groups)
+  (define files (file-groups-resolve file-groups))
+  (transduce files
+             (append-mapping (λ (file) (refactor-file file #:suite default-recommendations)))
+             #:into into-list))
+
+(define (refactoring-result->github-review-comment result)
+  (define path (file-source-path (refactoring-result-source result)))
+  (define old-code-snippet (refactoring-result-original-code result))
+  (define new-code-snippet (refactoring-result-new-code result))
+  (define start-line (code-snippet-start-line old-code-snippet))
+  (define end-line (sub1 (code-snippet-end-line old-code-snippet)))
+  (define start-col (code-snippet-start-column new-code-snippet))
+  (define new-code (code-snippet-raw-text new-code-snippet))
+  (define body (format "```suggestion\n~a\n```\n\n~a [`~a`]"
+                       (string-indent new-code #:amount start-col)
+                       (refactoring-result-message result)
+                       (refactoring-result-rule-name result)))
+  (github-review-comment #:path (first (git-path path))
+                         #:body body
+                         #:start-line start-line
+                         #:end-line end-line
+                         #:start-side "RIGHT"
+                         #:end-side "RIGHT"))
+
+(define resyntax-markdown-link "[Resyntax](https://docs.racket-lang.org/resyntax/)")
+
+(define (github-review-body comments?)
+  (string-append resyntax-markdown-link
+                 " analyzed this pull request and "
+                 (if comments?
+                     "has added suggestions."
+                     "found no issues.")))
+
 (define (resyntax-github-run #:git-base-ref git-base-ref
                              #:github-repository github-repository
                              #:branch-ref branch-ref)
-  (define filenames (git-diff-names git-base-ref))
-  (define files (file-groups-resolve (map single-file-group filenames)))
-  (printf "resyntax: --- analyzing code ---\n")
-  (define results
-    (transduce files
-               (append-mapping (λ (file) (refactor-file file #:suite default-recommendations)))
-               #:into into-list))
-  
+  (define results (resyntax-analyze-files (map single-file-group
+                                               (git-diff-names git-base-ref))))
   (define comments
-    (for/list ([result (in-list results)])
-      (define path (file-source-path (refactoring-result-source result)))
-      (define old-code-snippet (refactoring-result-original-code result))
-      (define new-code-snippet (refactoring-result-new-code result))
-      (define start-line (code-snippet-start-line old-code-snippet))
-      (define end-line (sub1 (code-snippet-end-line old-code-snippet)))
-      (define start-col (code-snippet-start-column new-code-snippet))
-      (define new-code (code-snippet-raw-text new-code-snippet))
-      (define body (format "```suggestion\n~a\n```\n\n~a [`~a`]"
-                           (string-indent new-code #:amount start-col)
-                           (refactoring-result-message result)
-                           (refactoring-result-rule-name result)))
-      (github-review-comment #:path (first (git-path path))
-                             #:body body
-                             #:start-line start-line
-                             #:end-line end-line
-                             #:start-side "RIGHT"
-                             #:end-side "RIGHT")))
-  
-  (define resyntax-markdown-link "[Resyntax](https://docs.racket-lang.org/resyntax/)")
+    (map refactoring-result->github-review-comment results))
   (define req
     (github-review-request #:owner-repo github-repository
                            #:pull-number (git-ref->pr-number branch-ref)
-                           #:body (string-append resyntax-markdown-link
-                                                 " analyzed this pull request and "
-                                                 (if (null? comments)
-                                                     "found no issues."
-                                                     "has added suggestions."))
+                           #:body (github-review-body (not (null? comments)))
                            #:event (if (null? comments)
                                        "APPROVE"
                                        "REQUEST_CHANGES")
                            #:comments comments))
-  
-  (printf "Request struct: ~a\nSending request!\n" req)
   (define resp (github-review-request-send req))
   (printf "Response: ~a\n" resp))
 
