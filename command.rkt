@@ -6,8 +6,8 @@
           [run-command (->* (string?) #:rest (listof (or/c string? path?))
                             string?)]))
 
-(require racket/string
-         racket/port
+(require racket/port
+         racket/string
          rebellion/private/guarded-block)
 
 ; This doesn't support anything but getting stdout -- but that's OK for now!
