@@ -3,8 +3,7 @@
 (require racket/contract/base)
 
 (provide (contract-out
-          [run-command (->* (string?) #:rest (listof (or/c string? path?))
-                            string?)]))
+          [run-command (-> string? (or/c string? path?) ... string?)]))
 
 (require racket/port
          racket/string
