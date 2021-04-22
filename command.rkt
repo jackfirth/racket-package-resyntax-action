@@ -18,7 +18,7 @@
   (guard (not cmd-path) then
          (error (format "couldn't find ~a executable in $PATH" cmd-name)))
   (define-values (proc stdout stdin stderr)
-    (apply subprocess `(#f #f #f ,cmd-path ,@args)))
+    (apply subprocess #f #f #f cmd-path args))
   (close-output-port stdin)
   (subprocess-wait proc)
   (define exit-code (subprocess-status proc))
