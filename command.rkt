@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require racket/contract)
+(require racket/contract/base)
 
 (provide (contract-out
           [run-command (->* (string?) #:rest (listof (or/c string? path?))
