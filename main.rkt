@@ -48,7 +48,7 @@
     [(regexp git-pr-ref-regexp (list _ num))
      (string->number num)]
     [_
-     (error (format "ref ~a doesn't represent a pull request"))]))
+     (error (format "ref ~a doesn't represent a pull request" ref))]))
 
 (define (resyntax-analyze-files file-groups)
   (define files (file-groups-resolve file-groups))
