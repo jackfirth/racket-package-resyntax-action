@@ -17,4 +17,4 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: 9999years/racket-package-resyntax-action@main
+      - uses: jackfirth/racket-package-resyntax-action@main
