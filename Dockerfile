@@ -1,4 +1,4 @@
-FROM racket/racket:8.0-full
+FROM racket/racket:8.5-full
 RUN apt-get update && apt-get install -y xvfb
 # `resyntax` uses DrRacket for indenting, which requires a display, so we need to install it
 # under `xvfb-run`.
