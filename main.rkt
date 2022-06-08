@@ -1,20 +1,22 @@
 #lang racket/base
 
-(require racket/contract)
 
-(provide (contract-out
-          [resyntax-github-run (-> #:git-base-ref string?
-                                   #:github-repository (and/c string? (lambda (s) (string-contains? s "/")))
-                                   #:branch-ref (and/c string? git-pr-ref?)
-                                   void)]
-          [git-diff-names (-> string?
-                              (listof string?))]
-          [git-path (-> (or/c string? path?)
-                        (listof string?))]
-          [git-pr-ref-regexp regexp?]
-          [git-pr-ref? predicate/c]
-          [git-ref->pr-number (-> string?
-                                  exact-nonnegative-integer?)]))
+(require racket/contract/base)
+
+
+(provide
+ (contract-out
+  [resyntax-github-run
+   (-> #:git-base-ref string?
+       #:github-repository (and/c string? (lambda (s) (string-contains? s "/")))
+       #:branch-ref (and/c string? git-pr-ref?)
+       void)]
+  [git-diff-names (-> string? (listof string?))]
+  [git-path (-> (or/c string? path?) (listof string?))]
+  [git-pr-ref-regexp regexp?]
+  [git-pr-ref? predicate/c]
+  [git-ref->pr-number (-> string? exact-nonnegative-integer?)]))
+
 
 (require racket/list
          racket/match
@@ -27,9 +29,11 @@
          resyntax/code-snippet
          resyntax/default-recommendations
          resyntax/file-group
+         resyntax/line-replacement
          resyntax/source
          racket-package-resyntax-action/command
          racket-package-resyntax-action/github)
+
 
 (define (git-diff-names commitish)
   (string-split (run-command "git" "diff" "--name-only" "-z" commitish)
@@ -58,20 +62,16 @@
 
 (define (refactoring-result->github-review-comment result)
   (define path (file-source-path (refactoring-result-source result)))
-  (define old-code-snippet (refactoring-result-original-code result))
-  (define new-code-snippet (refactoring-result-new-code result))
-  (define start-line (code-snippet-start-line old-code-snippet))
-  (define end-line (sub1 (code-snippet-end-line old-code-snippet)))
-  (define start-col (code-snippet-start-column new-code-snippet))
-  (define new-code (code-snippet-raw-text new-code-snippet))
-  (define body (format "```suggestion\n~a\n```\n\n~a [`~a`]"
-                       (string-indent new-code #:amount start-col)
-                       (refactoring-result-message result)
-                       (refactoring-result-rule-name result)))
+  (define replacement (refactoring-result-line-replacement result))
+  (define body
+    (format "```suggestion\n~a\n```\n\n~a [`~a`]"
+            (line-replacement-new-text replacement)
+            (refactoring-result-message result)
+            (refactoring-result-rule-name result)))
   (github-review-comment #:path (first (git-path path))
                          #:body body
-                         #:start-line start-line
-                         #:end-line end-line
+                         #:start-line (line-replacement-start-line replacement)
+                         #:end-line (line-replacement-original-end-line replacement)
                          #:start-side "RIGHT"
                          #:end-side "RIGHT"))
 
