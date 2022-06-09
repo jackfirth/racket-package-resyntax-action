@@ -7,6 +7,6 @@ RUN apt-get update && apt-get install -y xvfb git
 RUN xvfb-run raco pkg install --batch --auto --scope installation \
          "https://github.com/jackfirth/rebellion.git" \
          "https://github.com/jackfirth/resyntax.git" \
-         "https://github.com/9999years/racket-package-resyntax-action.git#main"
+         "https://github.com/jackfirth/racket-package-resyntax-action.git#main"
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
