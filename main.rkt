@@ -75,30 +75,26 @@
                          #:start-side "RIGHT"
                          #:end-side "RIGHT"))
 
-(define resyntax-markdown-link "[Resyntax](https://docs.racket-lang.org/resyntax/)")
 
-(define (github-review-body comments?)
-  (string-append resyntax-markdown-link
-                 " analyzed this pull request and "
-                 (if comments?
-                     "has added suggestions."
-                     "found no issues.")))
+(define (github-review-body comments? file-count)
+  (format "[Resyntax](https://docs.racket-lang.org/resyntax/) analyzed ~a in this pull request and ~a"
+          (if (= file-count 1) "1 file" (format "~a files" file-count))
+          (if comments? "has added suggestions." "found no issues.")))
+
 
 (define (resyntax-github-run #:git-base-ref git-base-ref
                              #:github-repository github-repository
                              #:branch-ref branch-ref)
-  (define results (resyntax-analyze-files (map single-file-group
-                                               (git-diff-names git-base-ref))))
-  (define comments
-    (map refactoring-result->github-review-comment results))
+  (define files (git-diff-names git-base-ref))
+  (define results (resyntax-analyze-files (map single-file-group files)))
+  (define comments (map refactoring-result->github-review-comment results))
   (define req
-    (github-review-request #:owner-repo github-repository
-                           #:pull-number (git-ref->pr-number branch-ref)
-                           #:body (github-review-body (not (null? comments)))
-                           #:event (if (null? comments)
-                                       "APPROVE"
-                                       "REQUEST_CHANGES")
-                           #:comments comments))
+    (github-review-request
+     #:owner-repo github-repository
+     #:pull-number (git-ref->pr-number branch-ref)
+     #:body (github-review-body (not (null? comments)) (length files))
+     #:event (if (null? comments) "APPROVE" "REQUEST_CHANGES")
+     #:comments comments))
   (define resp (github-review-request-send req))
   (printf "Response: ~a\n" resp))
 
@@ -110,6 +106,7 @@
     (for/list ([line (in-lines (open-input-string s))])
       (string-append indent-string line)))
   (string-join lines "\n"))
+
 
 (module+ main
   (resyntax-github-run #:git-base-ref (getenv "GITHUB_BASE_REF")
