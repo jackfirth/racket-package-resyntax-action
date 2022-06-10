@@ -64,7 +64,7 @@
   (define path (file-source-path (refactoring-result-source result)))
   (define replacement (refactoring-result-line-replacement result))
   (define body
-    (format "```suggestion\n~a\n```\n\n~a [`~a`]"
+    (format "```suggestion\n~a```\n\n~a [`~a`]"
             (line-replacement-new-text replacement)
             (refactoring-result-message result)
             (refactoring-result-rule-name result)))
@@ -97,15 +97,6 @@
      #:comments comments))
   (define resp (github-review-request-send req))
   (printf "Response: ~a\n" resp))
-
-; thank you jack for this code in the resyntax cli.rkt :)
-(define/guard (string-indent s #:amount amount)
-  (guard (zero? amount) then s)
-  (define indent-string (make-string amount #\space))
-  (define lines
-    (for/list ([line (in-lines (open-input-string s))])
-      (string-append indent-string line)))
-  (string-join lines "\n"))
 
 
 (module+ main
