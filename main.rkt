@@ -63,17 +63,20 @@
 (define (refactoring-result->github-review-comment result)
   (define path (file-source-path (refactoring-result-source result)))
   (define replacement (refactoring-result-line-replacement result))
+  (printf "DEBUG: replacement = ~a\n" replacement)
   (define body
-    (format "```suggestion\n~a```\n\n~a [`~a`]"
+    (format "```suggestion\n~a```\n\n**`~a`** ~a"
             (line-replacement-new-text replacement)
-            (refactoring-result-message result)
-            (refactoring-result-rule-name result)))
-  (github-review-comment #:path (first (git-path path))
-                         #:body body
-                         #:start-line (line-replacement-start-line replacement)
-                         #:end-line (line-replacement-original-end-line replacement)
-                         #:start-side "RIGHT"
-                         #:end-side "RIGHT"))
+            (refactoring-result-rule-name result)
+            (refactoring-result-message result)))
+  (define comment
+    (github-review-comment #:path (first (git-path path))
+                           #:body body
+                           #:start-line (line-replacement-start-line replacement)
+                           #:end-line (line-replacement-original-end-line replacement)
+                           #:start-side "RIGHT"
+                           #:end-side "RIGHT"))
+  (printf "DEBUG: comment = ~a\n" comment))
 
 
 (define (github-review-body comments? file-count)
