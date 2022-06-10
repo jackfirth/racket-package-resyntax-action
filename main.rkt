@@ -65,7 +65,7 @@
   (define replacement (refactoring-result-line-replacement result))
   (printf "DEBUG: replacement = ~v\n" replacement)
   (define body
-    (format "```suggestion\n~a```\n\n**`~a`** ~a"
+    (format "```suggestion\n~a\n```\n\n**`~a`** ~a"
             (line-replacement-new-text replacement)
             (refactoring-result-rule-name result)
             (refactoring-result-message result)))
