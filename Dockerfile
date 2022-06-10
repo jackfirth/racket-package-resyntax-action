@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y xvfb git
 # under `xvfb-run`.
 # When/if this is closed, we can use racket-langserver instead (perhaps?):
 # https://github.com/jeapostrophe/racket-langserver/issues/45
-RUN xvfb-run raco pkg install --batch --auto --scope installation \
+RUN xvfb-run raco pkg install --batch --auto --scope installation --binary-lib \
          "https://github.com/jackfirth/rebellion.git" \
          "https://github.com/jackfirth/resyntax.git" \
          "https://github.com/jackfirth/racket-package-resyntax-action.git#main"
