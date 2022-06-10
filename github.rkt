@@ -66,7 +66,7 @@
                             #:end-line end-line
                             #:start-side start-side
                             #:end-side end-side)
-     (if (= start-line (sub1 end-line))
+     (if (= start-line end-line)
          (hash 'path path
                'body body
                'line end-line
