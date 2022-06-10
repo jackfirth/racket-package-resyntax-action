@@ -58,7 +58,7 @@
 (define (resyntax-analyze-files file-groups)
   (define files (file-groups-resolve file-groups))
   (transduce files
-             (append-mapping (λ (file) (refactor-file file #:suite default-recommendations)))
+             (append-mapping (lambda (file) (refactor-file file #:suite default-recommendations)))
              #:into into-list))
 
 (define (refactoring-result->github-review-comment result)
