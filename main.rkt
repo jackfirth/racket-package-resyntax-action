@@ -76,7 +76,8 @@
                            #:end-line (line-replacement-original-end-line replacement)
                            #:start-side "RIGHT"
                            #:end-side "RIGHT"))
-  (printf "DEBUG: comment = ~a\n" comment))
+  (printf "DEBUG: comment = ~a\n" comment)
+  comment)
 
 
 (define (github-review-body comments? file-count)
