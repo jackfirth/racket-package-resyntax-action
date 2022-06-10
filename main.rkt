@@ -138,6 +138,23 @@ EOS
   (printf "Response: ~a\n" resp))
 
 
+(define (pwease-refactow-me?)
+  (or 1 2 (or 3 4)))
+
+
+(define (pwease-refactow-me2?)
+    (or 1 2 (or 3 4)))
+
+
+(define (pwease-refactow-me3?)
+(or 1 2 (or 3 4)))
+
+
+(define (pwease-refactow-me4?)
+  (let ([x 1])
+    (+ x 5)))
+
+
 (module+ main
   (resyntax-github-run #:git-base-ref (getenv "GITHUB_BASE_REF")
                        #:github-repository (getenv "GITHUB_REPOSITORY")
