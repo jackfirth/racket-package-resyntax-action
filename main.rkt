@@ -20,6 +20,7 @@
 
 (require racket/list
          racket/match
+         racket/pretty
          racket/string
          rebellion/collection/list
          rebellion/streaming/transducer
@@ -71,20 +72,29 @@
 ~a
 ```
 
-<details>
-  <summary>Debugging details</summary>
+Debugging details below:
 
-  Replacement object:
+<details>
+  <summary>Textual replacement</summary>
 
   ```scheme
-  ~v
+  ~a
+  ```
+<details>
+
+<details>
+  <summary>Syntactic replacement</summary>
+
+  ```scheme
+  ~a
   ```
 <details>
 EOS
             (refactoring-result-rule-name result)
             (refactoring-result-message result)
             (line-replacement-new-text replacement)
-            replacement))
+            (pretty-format replacement)
+            (pretty-format (refactoring-result-replacement result))))
   (define comment
     (github-review-comment #:path (first (git-path path))
                            #:body body
