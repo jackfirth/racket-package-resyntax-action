@@ -63,7 +63,7 @@
 (define (refactoring-result->github-review-comment result)
   (define path (file-source-path (refactoring-result-source result)))
   (define replacement (refactoring-result-line-replacement result))
-  (printf "DEBUG: replacement = ~a\n" replacement)
+  (printf "DEBUG: replacement = ~v\n" replacement)
   (define body
     (format "```suggestion\n~a```\n\n**`~a`** ~a"
             (line-replacement-new-text replacement)
@@ -76,7 +76,7 @@
                            #:end-line (line-replacement-original-end-line replacement)
                            #:start-side "RIGHT"
                            #:end-side "RIGHT"))
-  (printf "DEBUG: comment = ~a\n" comment)
+  (printf "DEBUG: comment = ~v\n" comment)
   comment)
 
 
