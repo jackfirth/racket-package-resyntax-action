@@ -78,7 +78,7 @@ Debugging details below:
   <summary>Textual replacement</summary>
 
   ```scheme
-  ~a
+~a
   ```
 </details>
 
@@ -86,15 +86,15 @@ Debugging details below:
   <summary>Syntactic replacement</summary>
 
   ```scheme
-  ~a
+~a
   ```
 </details>
 EOS
             (refactoring-result-rule-name result)
             (refactoring-result-message result)
             (line-replacement-new-text replacement)
-            (pretty-format replacement)
-            (pretty-format (refactoring-result-replacement result))))
+            (string-indent (pretty-format replacement) #:amount 2)
+            (string-indent (pretty-format (refactoring-result-replacement result)) #:amount 2)))
   (define comment
     (github-review-comment #:path (first (git-path path))
                            #:body body
@@ -110,6 +110,15 @@ EOS
   (format "[Resyntax](https://docs.racket-lang.org/resyntax/) analyzed ~a in this pull request and ~a"
           (if (= file-count 1) "1 file" (format "~a files" file-count))
           (if comments? "has added suggestions." "found no issues.")))
+
+
+(define/guard (string-indent s #:amount amount)
+  (guard (zero? amount) then s)
+  (define indent-string (make-string amount #\space))
+  (define lines
+    (for/list ([line (in-lines (open-input-string s))])
+      (string-append indent-string line)))
+  (string-join lines "\n"))
 
 
 (define (resyntax-github-run #:git-base-ref git-base-ref
