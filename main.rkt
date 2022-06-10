@@ -63,12 +63,28 @@
 (define (refactoring-result->github-review-comment result)
   (define path (file-source-path (refactoring-result-source result)))
   (define replacement (refactoring-result-line-replacement result))
-  (printf "DEBUG: replacement = ~v\n" replacement)
   (define body
-    (format "```suggestion\n~a\n```\n\n**`~a`** ~a"
-            (line-replacement-new-text replacement)
+    (format #<<EOS
+**`~a`** ~a
+
+```suggestion
+~a
+```
+
+<details>
+  <summary>Debugging details</summary>
+
+  Replacement object:
+
+  ```scheme
+  ~v
+  ```
+<details>
+EOS
             (refactoring-result-rule-name result)
-            (refactoring-result-message result)))
+            (refactoring-result-message result)
+            (line-replacement-new-text replacement)
+            replacement))
   (define comment
     (github-review-comment #:path (first (git-path path))
                            #:body body
