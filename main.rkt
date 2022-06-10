@@ -80,7 +80,7 @@ Debugging details below:
   ```scheme
   ~a
   ```
-<details>
+</details>
 
 <details>
   <summary>Syntactic replacement</summary>
@@ -88,7 +88,7 @@ Debugging details below:
   ```scheme
   ~a
   ```
-<details>
+</details>
 EOS
             (refactoring-result-rule-name result)
             (refactoring-result-message result)
