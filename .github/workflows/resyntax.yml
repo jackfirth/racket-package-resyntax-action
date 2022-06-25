@@ -23,5 +23,5 @@ jobs:
       - uses: Bogdanp/setup-racket@v1.8.1
         with:
           version: stable
-      - run: raco pkg install --auto --no-docs resyntax
+      - run: raco pkg install --auto --no-docs https://github.com/jackfirth/resyntax.git
       - run: xvfb-run racket -l- resyntax/cli analyze --local-git-repository . "origin/${GITHUB_BASE_REF}" --output-as-github-review
