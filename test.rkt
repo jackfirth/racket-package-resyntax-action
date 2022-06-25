@@ -8,3 +8,6 @@
 
 
 (or 1 (or 2 3))
+
+
+(if 'cond 'then (if 'cond2 'then2 'else))
