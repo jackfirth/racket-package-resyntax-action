@@ -16,3 +16,11 @@
 (if 'a
     (println "true branch")
     #f)
+
+
+(define some-list (list 1 2 3))
+(for-each
+ (λ (x)
+   (displayln x)
+   (displayln x))
+ some-list)
