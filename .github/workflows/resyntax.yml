@@ -21,4 +21,4 @@ jobs:
         with:
           version: stable
       - run: raco pkg install --auto --no-docs https://github.com/jackfirth/resyntax.git#feature-github-integration
-      - run: xvfb-run racket -l- resyntax/cli analyze --local-git-repository . "${GITHUB_BASE_REF}" --output-as-github-review
+      - run: sudo xvfb-run racket -l- resyntax/cli analyze --local-git-repository . "${GITHUB_BASE_REF}" --output-as-github-review
