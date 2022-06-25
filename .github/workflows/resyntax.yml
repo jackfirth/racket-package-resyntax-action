@@ -17,4 +17,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: jackfirth/racket-package-resyntax-action@main
+      - uses: Bogdanp/setup-racket@v1.8.1
+        with:
+          version: stable
+      - run: raco pkg install --auto --installation https://github.com/jackfirth/resyntax#feature-github-integration
+      - run: resyntax analyze --local-git-repository . "${GITHUB_BASE_REF}" --output-as-github-review
