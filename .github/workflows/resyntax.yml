@@ -20,6 +20,7 @@ jobs:
       - uses: Bogdanp/setup-racket@v1.8.1
         with:
           version: stable
+          catalogs: https://pkg-build.racket-lang.org/server/built/catalog/
       - run: sudo raco pkg install --auto --installation --batch --binary-lib resyntax
       - run: sudo raco pkg install --auto --installation https://github.com/jackfirth/resyntax.git#feature-github-integration
       - run: resyntax analyze --local-git-repository . "${GITHUB_BASE_REF}" --output-as-github-review
