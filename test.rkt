@@ -5,3 +5,6 @@
   (let ([dx (- x1 x2)]
         [dy (- y1 y2)])
     (sqrt (+ (* dx dx) (* dy dy)))))
+
+
+(or 1 (or 2 3))
