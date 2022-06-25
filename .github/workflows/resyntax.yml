@@ -17,6 +17,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        # See https://github.com/actions/checkout/issues/118.
+        with:
+          fetch-depth: 0
       - uses: Bogdanp/setup-racket@v1.8.1
         with:
           version: stable
