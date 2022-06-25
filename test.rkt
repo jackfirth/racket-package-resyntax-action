@@ -11,3 +11,8 @@
 
 
 (if 'cond 'then (if 'cond2 'then2 'else))
+
+
+(if 'a
+    (println "true branch")
+    #f)
