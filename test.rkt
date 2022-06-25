@@ -24,3 +24,13 @@
    (displayln x)
    (displayln x))
  some-list)
+
+
+(define some-list2 (list 3 5 14 10 6 5 2))
+(ormap
+ (λ (x)
+   (and (number? x)
+        (positive? x)
+        (even? x)
+        (< x 10)))
+ some-list2)
