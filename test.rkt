@@ -34,5 +34,3 @@
         (even? x)
         (< x 10)))
  some-list2)
-
-
